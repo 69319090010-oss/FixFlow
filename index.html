@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f47716">
+<title>FixFlow | ระบบแจ้งอุปกรณ์ชำรุด</title>
+<style>
+:root{--orange:#f47716;--orange2:#ff9a3d;--ink:#171717;--muted:#777;--line:#ececec;--bg:#f5f5f5;--white:#fff;--green:#16834a;--red:#c0392b;--blue:#2867b2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{max-width:520px;min-height:100vh;margin:auto;background:var(--bg);position:relative;padding-bottom:82px}
+.top{background:var(--ink);color:#fff;padding:18px 18px 22px;border-bottom:4px solid var(--orange);border-radius:0 0 20px 20px}
+.brand{display:flex;align-items:center;gap:11px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#fff,#cfcfcf);display:grid;place-items:center;color:var(--orange);font-size:24px;font-weight:900;box-shadow:0 3px 0 #777}
+.brand b{font-size:22px;letter-spacing:.4px}.brand small{display:block;color:#ccc;font-size:10px;letter-spacing:1.2px}
+.topline{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.topline h1{font-size:21px;margin:0}.topline p{margin:4px 0 0;color:#ccc;font-size:12px}
+main{padding:17px}.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:13px;box-shadow:0 4px 14px #00000008}
+h2{font-size:17px;margin:0 0 12px}h3{font-size:14px;margin:0 0 7px}.muted{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px}.stat strong{display:block;font-size:25px}.stat span{font-size:12px;color:var(--muted)}
+.btn{border:0;border-radius:12px;padding:12px 15px;font-weight:700;background:var(--orange);color:white;width:100%}.btn.dark{background:var(--ink)}.btn.light{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.small{width:auto;padding:8px 11px;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions .btn{flex:1;min-width:110px}
+.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #ddd;border-radius:11px;padding:11px;background:#fff;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px #f477161c}.field textarea{min-height:90px;resize:vertical}
+.item{padding:13px 0;border-top:1px solid var(--line)}.item:first-of-type{border-top:0}.itemhead{display:flex;justify-content:space-between;gap:8px;align-items:center}.item p{font-size:12px;color:var(--muted);margin:5px 0}
+.pill{display:inline-block;padding:5px 9px;border-radius:99px;font-size:10px;font-weight:700;background:#fff0e5;color:#b95200}.pill.green{background:#e7f6ed;color:#147342}.pill.red{background:#fdecea;color:#b52c20}.pill.gray{background:#eee;color:#555}.pill.blue{background:#e9f1ff;color:#245aa0}
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:72px;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}.tab{border:0;background:none;color:#888;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px}.tab .ico{font-size:20px}.tab.active{color:var(--orange);font-weight:800}
+.loginwrap{min-height:100vh;display:grid;place-items:center;padding:20px}.login{width:min(430px,100%)}.login .top{border-radius:20px;margin-bottom:15px}.hint{background:#fff7ef;border:1px solid #ffdfc5;border-radius:12px;padding:11px;font-size:11px;color:#70401f;line-height:1.6}
+.hidden{display:none!important}.empty{text-align:center;color:#888;padding:24px 8px;font-size:13px}.timeline{border-left:2px solid #ddd;margin:12px 0 8px 8px;padding-left:17px}.step{position:relative;padding:0 0 17px}.step:before{content:"";position:absolute;left:-23px;top:3px;width:10px;height:10px;border-radius:50%;background:#ccc;border:2px solid white}.step.done:before{background:var(--green)}.step.current:before{background:var(--orange);box-shadow:0 0 0 3px #ffeadb}.step b{font-size:13px}.step small{display:block;color:#888;font-size:11px;margin-top:3px}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#222;color:white;padding:11px 16px;border-radius:10px;font-size:12px;z-index:10;max-width:90%;display:none}
+@media(min-width:600px){body{padding:20px 0}.app{border-radius:24px;overflow:hidden;box-shadow:0 10px 40px #0002;min-height:calc(100vh - 40px)}.tabs{bottom:20px;border-radius:0 0 24px 24px}}
+</style>
+</head>
+<body>
+<div id="loginView" class="loginwrap">
+ <div class="login">
+  <div class="top">
+   <div class="brand"><div class="logo">⚙</div><div><b>FixFlow</b><small>COLLEGE MAINTENANCE SYSTEM</small></div></div>
+   <div class="topline"><div><h1>เข้าสู่ระบบ</h1><p>ระบบแจ้งอุปกรณ์ชำรุดและติดตามงานซ่อม</p></div></div>
+  </div>
+  <div class="card">
+   <div class="field"><label>Username / รหัสนักศึกษา</label><input id="username" placeholder="กรอกรหัสผู้ใช้งาน" autocomplete="username"></div>
+   <div class="field"><label>Password / รหัสผ่าน</label><input id="password" type="password" placeholder="กรอกรหัสผ่าน" autocomplete="current-password"></div>
+   <button class="btn" onclick="login()">เข้าสู่ระบบ</button>
+   <p id="loginError" class="muted" style="color:#c0392b"></p>
+   <div class="hint"><b>บัญชีทดลองสำหรับดูตัวอย่าง</b><br>ผู้แจ้ง: student / demo123<br>ช่าง: technician / demo123<br>ผู้อนุมัติ: director / demo123<br><br>ตัวอย่างนี้เป็นต้นแบบเพื่อทดลองหน้าจอเท่านั้น ไม่เชื่อมฐานข้อมูลจริง</div>
+  </div>
+ </div>
+</div>
+<div id="appView" class="app hidden">
+ <header class="top">
+  <div class="brand"><div class="logo">⚙</div><div><b>FixFlow</b><small>COLLEGE MAINTENANCE SYSTEM</small></div></div>
+  <div class="topline"><div><h1 id="pageTitle">หน้าหลัก</h1><p id="welcome">ยินดีต้อนรับ</p></div><span id="roleTag" class="pill">ผู้แจ้ง</span></div>
+ </header>
+ <main id="content"></main>
+ <nav class="tabs" id="tabs"></nav>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const accounts={student:{password:"demo123",role:"ผู้แจ้ง",name:"ผู้ใช้งานทดลอง",id:"STU001"},technician:{password:"demo123",role:"ช่าง / เจ้าหน้าที่",name:"เจ้าหน้าที่ซ่อมบำรุง",id:"TECH001"},director:{password:"demo123",role:"ผู้อำนวยการ",name:"ผู้อนุมัติทดลอง",id:"DIR001"}};
+let user=null, page="home", requests=JSON.parse(localStorage.getItem("fixflow_requests")||"[]");
+const statusList=["ยื่นคำร้องแจ้งของเสีย","รออนุมัติคำขอซ่อม","ช่างกำลังดำเนินการซ่อม","รออะไหล่","ซ่อมเสร็จสิ้น","ไม่อนุมัติ"];
+function save(){localStorage.setItem("fixflow_requests",JSON.stringify(requests))}
+function toast(s){let t=document.getElementById("toast");t.textContent=s;t.style.display="block";setTimeout(()=>t.style.display="none",2300)}
+function login(){let u=document.getElementById("username").value.trim(),p=document.getElementById("password").value;let a=accounts[u];if(!a||a.password!==p){document.getElementById("loginError").textContent="ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";return}user={...a,username:u};document.getElementById("loginView").classList.add("hidden");document.getElementById("appView").classList.remove("hidden");render()}
+function logout(){user=null;document.getElementById("appView").classList.add("hidden");document.getElementById("loginView").classList.remove("hidden")}
+function navItems(){return user.role==="ผู้แจ้ง"?[["home","⌂","หน้าหลัก"],["new","＋","แจ้งของเสีย"],["track","◷","ติดตาม"],["history","▤","ประวัติ"],["profile","♙","โปรไฟล์"]]:user.role==="ช่าง / เจ้าหน้าที่"?[["home","⌂","ภาพรวม"],["jobs","⚒","งานซ่อม"],["history","▤","ประวัติ"],["profile","♙","โปรไฟล์"]]:[["home","⌂","ภาพรวม"],["approve","✓","อนุมัติ"],["history","▤","ประวัติ"],["profile","♙","โปรไฟล์"]]}
+function setPage(p){page=p;render()}
+function render(){document.getElementById("welcome").textContent="สวัสดี "+user.name;document.getElementById("roleTag").textContent=user.role;let titles={home:"หน้าหลัก",new:"แจ้งอุปกรณ์ชำรุด",track:"ติดตามสถานะ",history:"ประวัติคำร้อง",profile:"โปรไฟล์",jobs:"จัดการงานซ่อม",approve:"พิจารณาอนุมัติ"};document.getElementById("pageTitle").textContent=titles[page]||"FixFlow";document.getElementById("tabs").innerHTML=navItems().map(([p,i,t])=>`<button class="tab ${page===p?"active":""}" onclick="setPage('${p}')"><span class="ico">${i}</span>${t}</button>`).join("");let c=document.getElementById("content");if(page==="home")c.innerHTML=home();if(page==="new")c.innerHTML=form();if(page==="track")c.innerHTML=track();if(page==="history")c.innerHTML=history();if(page==="profile")c.innerHTML=profile();if(page==="jobs")c.innerHTML=jobs();if(page==="approve")c.innerHTML=approve()}
+function home(){let mine=user.role==="ผู้แจ้ง"?requests.filter(r=>r.owner===user.id):requests;let pending=mine.filter(r=>r.status===1).length,done=mine.filter(r=>r.status===4).length;return `<div class="grid"><div class="stat"><strong>${mine.length}</strong><span>รายการแจ้งทั้งหมด</span></div><div class="stat"><strong>${pending}</strong><span>รออนุมัติ</span></div><div class="stat"><strong>${mine.filter(r=>r.status===2||r.status===3).length}</strong><span>กำลังดำเนินการ</span></div><div class="stat"><strong>${done}</strong><span>ซ่อมเสร็จแล้ว</span></div></div><div class="card" style="margin-top:13px"><h2>${user.role==="ผู้แจ้ง"?"แจ้งอุปกรณ์ชำรุด":"รายการดำเนินงาน"}</h2><p class="muted">บันทึกปัญหาและติดตามการซ่อมภายในวิทยาลัย</p><button class="btn" onclick="setPage('${user.role==="ผู้แจ้ง"?"new":user.role==="ช่าง / เจ้าหน้าที่"?"jobs":"approve"}')">${user.role==="ผู้แจ้ง"?"＋ แจ้งของเสีย":"เปิดรายการงาน"}</button></div><div class="card"><h2>รายการล่าสุด</h2>${requestCards(mine.slice().reverse().slice(0,3))}</div>`}
+function form(){return `<div class="card"><h2>แบบฟอร์มแจ้งอุปกรณ์ชำรุด</h2><p class="muted">กรุณากรอกข้อมูลให้ครบถ้วนเพื่อให้เจ้าหน้าที่ตรวจสอบ</p><form onsubmit="submitRequest(event)"><div class="field"><label>ประเภทอุปกรณ์ *</label><select id="kind" required><option value="">เลือกประเภท</option>${["คอมพิวเตอร์","เครื่องปรับอากาศ","โทรทัศน์","พัดลม","ลำโพง / เครื่องเสียง","กล้องวงจรปิด","เครื่องปั๊มน้ำ","อื่น ๆ"].map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>ชื่ออุปกรณ์ / หมายเลขครุภัณฑ์</label><input id="asset" placeholder="เช่น คอมพิวเตอร์หมายเลข 01"></div><div class="field"><label>สถานที่ตั้ง *</label><input id="place" required placeholder="เช่น อาคาร 2 ห้อง 204"></div><div class="field"><label>อาการที่พบ *</label><textarea id="detail" required placeholder="อธิบายอาการชำรุด"></textarea></div><div class="field"><label>รูปภาพประกอบ (ถ้ามี)</label><input id="photo" type="file" accept="image/*"></div><button class="btn">ส่งคำร้อง</button></form></div>`}
+function submitRequest(e){e.preventDefault();let file=document.getElementById("photo").files[0];let r={id:"FF-"+String(Date.now()).slice(-6),owner:user.id,ownerName:user.name,kind:kind.value,asset:asset.value,place:place.value,detail:detail.value,photoName:file?file.name:"",date:new Date().toLocaleString("th-TH"),status:0,estimate:"",note:"",repairNote:""};requests.push(r);save();toast("ส่งคำร้องเรียบร้อยแล้ว");setPage("track")}
+function statusPill(r){let cls=r.status===4?"green":r.status===5?"red":r.status===2||r.status===3?"blue":"gray";return `<span class="pill ${cls}">${statusList[r.status]}</span>`}
+function requestCards(arr){if(!arr.length)return `<div class="empty">ยังไม่มีรายการแจ้ง</div>`;return arr.map(r=>`<div class="item"><div class="itemhead"><b>${r.kind}</b>${statusPill(r)}</div><p>${r.id} · ${r.place}</p><p>${r.detail}</p><button class="btn light small" onclick="viewRequest('${r.id}')">ดูรายละเอียด</button></div>`).join("")}
+function track(){let arr=requests.filter(r=>user.role!=="ผู้แจ้ง"||r.owner===user.id).slice().reverse();return `<div class="card"><h2>ติดตามสถานะการซ่อม</h2><p class="muted">ดูความคืบหน้าคำร้องของคุณ</p>${arr.length?arr.map(r=>`<div class="item"><div class="itemhead"><b>${r.id} · ${r.kind}</b>${statusPill(r)}</div><p>${r.place}</p><div class="timeline">${statusList.slice(0,5).map((s,i)=>`<div class="step ${i<r.status?"done":i===r.status?"current":""}"><b>${s}</b><small>${i===r.status?"สถานะปัจจุบัน":i<r.status?"ผ่านขั้นตอนนี้แล้ว":"รอดำเนินการ"}</small></div>`).join("")}</div><button class="btn light small" onclick="viewRequest('${r.id}')">รายละเอียดคำร้อง</button></div>`).join(""):`<div class="empty">ยังไม่มีคำร้องให้ติดตาม</div>`}</div>`}
+function history(){let arr=requests.filter(r=>user.role!=="ผู้แจ้ง"||r.owner===user.id).slice().reverse();return `<div class="card"><h2>ประวัติคำร้องทั้งหมด</h2>${requestCards(arr)}</div>`}
+function profile(){return `<div class="card"><h2>ข้อมูลผู้ใช้งาน</h2><div class="item"><b>${user.name}</b><p>รหัสผู้ใช้: ${user.id}</p><p>สิทธิ์: ${user.role}</p></div><button class="btn dark" onclick="logout()">ออกจากระบบ</button></div>`}
+function jobs(){return `<div class="card"><h2>งานซ่อมที่ได้รับแจ้ง</h2>${requests.length?requests.map(r=>`<div class="item"><div class="itemhead"><b>${r.id} · ${r.kind}</b>${statusPill(r)}</div><p>${r.place} · ผู้แจ้ง ${r.ownerName}</p><p>${r.detail}</p><div class="field"><label>ประเมินค่าซ่อม (บาท)</label><input id="est-${r.id}" type="number" min="0" placeholder="ระบุราคา" value="${r.estimate}"></div><div class="field"><label>หมายเหตุ / ผลการตรวจสอบ</label><input id="note-${r.id}" value="${r.note}" placeholder="รายละเอียดเพิ่มเติม"></div><div class="actions"><button class="btn small" onclick="estimate('${r.id}')">ส่งเสนออนุมัติ</button><button class="btn green small" onclick="updateStatus('${r.id}',2)">เริ่มซ่อม</button><button class="btn light small" onclick="updateStatus('${r.id}',3)">รออะไหล่</button><button class="btn dark small" onclick="updateStatus('${r.id}',4)">ซ่อมเสร็จ</button></div></div>`).join(""):`<div class="empty">ยังไม่มีงานซ่อม</div>`}</div>`}
+function estimate(id){let r=requests.find(x=>x.id===id);r.estimate=document.getElementById("est-"+id).value;r.note=document.getElementById("note-"+id).value;r.status=1;save();toast("ส่งเรื่องเพื่อรออนุมัติแล้ว");render()}
+function updateStatus(id,s){let r=requests.find(x=>x.id===id);r.status=s;save();toast("อัปเดตสถานะแล้ว");render()}
+function approve(){let arr=requests.filter(r=>r.status===1);return `<div class="card"><h2>คำร้องรออนุมัติงบประมาณ</h2>${arr.length?arr.map(r=>`<div class="item"><div class="itemhead"><b>${r.id} · ${r.kind}</b>${statusPill(r)}</div><p>ผู้แจ้ง: ${r.ownerName} · ${r.place}</p><p>${r.detail}</p><p><b>ราคาประเมิน: ${r.estimate?Number(r.estimate).toLocaleString("th-TH")+" บาท":"ยังไม่ระบุ"}</b></p><p>${r.note}</p><div class="actions"><button class="btn green small" onclick="updateStatus('${r.id}',2)">อนุมัติ</button><button class="btn red small" onclick="reject('${r.id}')">ไม่อนุมัติ</button></div></div>`).join(""):`<div class="empty">ไม่มีคำร้องรออนุมัติ</div>`}</div>`}
+function reject(id){let reason=prompt("ระบุเหตุผลที่ไม่อนุมัติ");if(reason===null)return;let r=requests.find(x=>x.id===id);r.status=5;r.note=reason;save();toast("บันทึกผลการพิจารณาแล้ว");render()}
+function viewRequest(id){let r=requests.find(x=>x.id===id);alert(`คำร้อง ${r.id}\nอุปกรณ์: ${r.kind}\nสถานที่: ${r.place}\nอาการ: ${r.detail}\nสถานะ: ${statusList[r.status]}\nราคาประเมิน: ${r.estimate||"ยังไม่ระบุ"} บาท\nหมายเหตุ: ${r.note||"-"}`)}
+</script>
+</body>
+</html>
